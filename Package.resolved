@@ -1,0 +1,15 @@
+{
+  "originHash" : "22e5e4e9276e0147e6e97b35ff1747d48fbe919f3d59929b96f87e7569f02564",
+  "pins" : [
+    {
+      "identity" : "plate",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/plate.git",
+      "state" : {
+        "revision" : "71bbb66d3ec6463c5ea4457c8d34797c72b8edfd",
+        "version" : "1.2.10"
+      }
+    }
+  ],
+  "version" : 3
+}
