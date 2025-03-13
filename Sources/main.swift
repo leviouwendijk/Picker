@@ -285,35 +285,42 @@ struct DatePickerView: View {
                 .pickerStyle(MenuPickerStyle())
                 .padding()
 
-                Button(action: {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(formattedOutput, forType: .string)
-                }) {
-                    Text(formattedOutput)
-                        .bold()
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(5)
-                }
-                .buttonStyle(PlainButtonStyle()) 
+                Spacer()
 
-                if showMailerFields {
+                VStack {
                     Button(action: {
                         NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(mailerCommand, forType: .string)
+                        NSPasteboard.general.setString(formattedOutput, forType: .string)
                     }) {
-                        Text(mailerCommand)
+                        Text(formattedOutput)
                             .bold()
                             .padding()
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(5)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .buttonStyle(PlainButtonStyle()) 
+
+                    if showMailerFields {
+                        Button(action: {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(mailerCommand, forType: .string)
+                        }) {
+                            Text(mailerCommand)
+                                .bold()
+                                .padding()
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(5)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                    }
                 }
             }
             .frame(width: 400)
         }
         .padding()
+        .onAppear {
+            fetchContacts()
+        }
     }
 
     private func requestContactsAccess() {
