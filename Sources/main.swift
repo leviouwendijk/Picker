@@ -172,7 +172,7 @@ struct DatePickerView: View {
                 }
                 .scrollContentBackground(.hidden) 
             }
-            .frame(width: 200)
+            .frame(width: 180)
             
             // Day selector
             VStack {
@@ -189,7 +189,7 @@ struct DatePickerView: View {
                 }
                 .scrollContentBackground(.hidden)
             }
-            .frame(width: 200)
+            .frame(width: 140)
             
             // Hours selector
             VStack {
@@ -222,6 +222,10 @@ struct DatePickerView: View {
                     .contentShape(Rectangle()) 
                 }
                 .scrollContentBackground(.hidden) 
+
+                Spacer()
+                Divider()
+                Spacer()
 
                 Text("Common").bold()
                 List([0, 15, 30, 45], id: \.self) { minute in
