@@ -66,19 +66,22 @@ struct DatePickerView: View {
         return String(format: "%02d:%02d", selectedHour, selectedMinute)
     }
 
+    @State private var appointmentsQueue: [Appointment] = [] // ⬅️ Holds multiple appointments
+
     var mailerCommand: String {
         let mailerArgs = MailerArguments(
             client: client,
             email: email,
             dog: dog,
-            date: cliDate,
-            time: cliTime,
-            location: location,
-            areaCode: areaCode,
-            street: street,
-            number: number
+            appointmentsJSON: appointmentsQueueToJSON(appointmentsQueue)
+            // date: cliDate,
+            // time: cliTime,
+            // location: location,
+            // areaCode: areaCode,
+            // street: street,
+            // number: number
         )
-        return mailerArgs.string(local, localLocation)
+        return mailerArgs.string()
     }
 
     @State private var searchQuery = ""
@@ -87,14 +90,70 @@ struct DatePickerView: View {
 
     var filteredContacts: [CNContact] {
         if searchQuery.isEmpty { return contacts }
+        let normalizedQuery = searchQuery.normalizedForSearch
         return contacts.filter {
-            $0.givenName.lowercased().contains(searchQuery.lowercased()) ||
-            $0.familyName.lowercased().contains(searchQuery.lowercased()) ||
-            ($0.emailAddresses.first?.value as String?)?.lowercased().contains(searchQuery.lowercased()) ?? false
+            $0.givenName.normalizedForSearch.contains(normalizedQuery) ||
+            $0.familyName.normalizedForSearch.contains(normalizedQuery) ||
+            (($0.emailAddresses.first?.value as String?)?.normalizedForSearch.contains(normalizedQuery) ?? false)
         }
     }
 
     @State private var local = false
+
+    /// **Formats a selected date into the appointment structure**
+    private func createAppointment() -> Appointment {
+        let dateString = String(format: "%02d/%02d/%04d", selectedDay, selectedMonth, year)
+        let timeString = String(format: "%02d:%02d", selectedHour, selectedMinute)
+        let dayString = getDayName(day: selectedDay, month: selectedMonth, year: year)
+
+        return Appointment(
+            date: dateString,
+            time: timeString,
+            day: dayString,
+            street: local ? "" : (street ?? ""),
+            number: local ? "" : (number ?? ""),
+            areaCode: local ? "" : (areaCode ?? ""),
+            location: local ? localLocation : location
+        )
+    }
+
+    /// **Adds the selected appointment to the queue**
+    private func addToQueue() {
+        let newAppointment = createAppointment()
+        if !appointmentsQueue.contains(where: { $0.date == newAppointment.date && $0.time == newAppointment.time }) {
+            appointmentsQueue.append(newAppointment)
+        }
+    }
+
+    /// **Clears the queue**
+    private func clearQueue() {
+        appointmentsQueue.removeAll()
+    }
+
+    /// **Removes an appointment from the queue**
+    private func removeAppointment(at index: Int) {
+        appointmentsQueue.remove(at: index)
+    }
+
+    /// **Get the Dutch name of the selected day**
+    private func getDayName(day: Int, month: Int, year: Int) -> String {
+        let dateComponents = DateComponents(year: year, month: month, day: day)
+        let calendar = Calendar.current
+        if let date = calendar.date(from: dateComponents) {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "nl_NL") // Dutch locale
+            formatter.dateFormat = "EEEE" // Full day name
+            return formatter.string(from: date).capitalized
+        }
+        return "Onbekend"
+    }
+
+    @State private var showAlert = false
+    @State private var alertTitle = ""
+    @State private var alertMessage = ""
+
+    @State private var showSuccessBanner = false
+    @State private var successBannerMessage = ""
 
     var body: some View {
         HStack {
@@ -234,6 +293,7 @@ struct DatePickerView: View {
                                 }
                             }
                         }
+                        .scrollContentBackground(.hidden) 
                         .frame(height: 200)
 
                         Text("Mailer Arguments").bold()
@@ -316,10 +376,94 @@ struct DatePickerView: View {
                 }
             }
             .frame(width: 400)
+
+            Divider()
+
+            VStack {
+                Text("Appointments Queue").bold()
+
+                if appointmentsQueue.isEmpty {
+                    Text("No appointments added")
+                        .foregroundColor(.gray)
+                } else {
+                    ScrollView {
+                        ForEach(appointmentsQueue.indices, id: \.self) { index in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("📅 \(appointmentsQueue[index].date) (\(appointmentsQueue[index].day))")
+                                    Text("🕒 \(appointmentsQueue[index].time)")
+                                    if !appointmentsQueue[index].street.isEmpty {
+                                        Text("\(appointmentsQueue[index].street) \(appointmentsQueue[index].number)")
+                                    }
+                                    if !appointmentsQueue[index].areaCode.isEmpty {
+                                        Text("\(appointmentsQueue[index].areaCode)")
+                                    }
+                                    Text("📍 \(appointmentsQueue[index].location)")
+                                }
+                                Spacer()
+                                Button(action: { removeAppointment(at: index) }) {
+                                    Image(systemName: "x.circle.fill")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(8)
+                        }
+                    }
+                }
+
+                Spacer()
+
+                // **Queue Management Buttons**
+                HStack {
+                    Button(action: addToQueue) {
+                        Label("Add to Queue", systemImage: "plus.circle.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+
+                    Button(action: clearQueue) {
+                        Label("Clear Queue", systemImage: "trash.fill")
+                            .foregroundColor(.red)
+                    }
+                    .buttonStyle(.bordered)
+
+                    Button(action: sendConfirmationEmail) {
+                        Label("Send confirmation", systemImage: "paperplane.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding(.top, 10)
+            }
+            .frame(width: 400)
         }
         .padding()
         .onAppear {
             fetchContacts()
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(
+                title: Text(alertTitle),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
+        if showSuccessBanner {
+            VStack {
+                Spacer()
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.white)
+                    Text(successBannerMessage)
+                        .foregroundColor(.white)
+                }
+                .padding()
+                .background(Color.green)
+                .cornerRadius(8)
+                .padding(.bottom, 20)
+                .transition(.move(edge: .bottom))
+            }
+            .animation(.easeInOut, value: showSuccessBanner)
         }
     }
 
@@ -346,6 +490,41 @@ struct DatePickerView: View {
 
         DispatchQueue.main.async {
             contacts = fetchedContacts
+        }
+    }
+
+    private func sendConfirmationEmail() {
+        let data = MailerArguments(
+            client: client,
+            email: email,
+            dog: dog,
+            appointmentsJSON: appointmentsQueueToJSON(appointmentsQueue)
+        )
+        let arguments = data.string(false)
+
+        // Execute on a background thread to avoid blocking the UI
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try executeMailer(arguments)
+                // Prepare success alert on the main thread
+                DispatchQueue.main.async {
+                    successBannerMessage = "The confirmation email was sent successfully."
+                    showSuccessBanner = true
+                    // Auto-dismiss after 3 seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        withAnimation {
+                            showSuccessBanner = false
+                        }
+                    }
+                }
+            } catch {
+                // Prepare failure alert on the main thread
+                DispatchQueue.main.async {
+                    alertTitle = "Error"
+                    alertMessage = "There was an error sending the confirmation email:\n\(error.localizedDescription) \(arguments)"
+                    showAlert = true
+                }
+            }
         }
     }
 }
@@ -375,36 +554,132 @@ struct MailerArguments {
     let client: String
     let email: String
     let dog: String
+    let appointmentsJSON: String
+    // let date: String
+    // let time: String
+    // let location: String
+    // let areaCode: String?
+    // let street: String?
+    // let number: String?
+
+    // func string(_ local: Bool,_ localLocation: String) -> String {
+    func string(_ includeBinaryName: Bool = true) -> String {
+        if includeBinaryName {
+            let components: [String] = [
+                "mailer",
+                "appointment",
+                "--client \"\(client)\"",
+                "--email \"\(email)\"",
+                "--dog \"\(dog)\"",
+                "\(appointmentsJSON)",
+                // "--date \"\(date)\"",
+                // "--time \"\(time)\"",
+                // "--location \"\(local ? localLocation : location)\""
+                ""
+            ]
+
+            // if let areaCode = areaCode, !areaCode.isEmpty, !local {
+            //     components.append("--area-code \"\(areaCode)\"")
+            // }
+            // if let street = street, !street.isEmpty, !local {
+            //     components.append("--street \"\(street)\"")
+            // }
+            // if let number = number, !number.isEmpty, !local {
+            //     components.append("--number \"\(number)\"")
+            // }
+
+            return components.joined(separator: " ")
+        } else {
+            let components: [String] = [
+                "appointment",
+                "--client \"\(client)\"",
+                "--email \"\(email)\"",
+                "--dog \"\(dog)\"",
+                "\(appointmentsJSON)",
+                ""
+            ]
+
+            return components.joined(separator: " ")
+        }
+    }
+}
+
+struct Appointment: Identifiable {
+    let id = UUID()
     let date: String
     let time: String
+    let day: String
+    let street: String
+    let number: String
+    let areaCode: String
     let location: String
-    let areaCode: String?
-    let street: String?
-    let number: String?
 
-    func string(_ local: Bool,_ localLocation: String) -> String {
-        var components: [String] = [
-            "mailer",
-            "appointment",
-            "--client \"\(client)\"",
-            "--email \"\(email)\"",
-            "--dog \"\(dog)\"",
-            "--date \"\(date)\"",
-            "--time \"\(time)\"",
-            "--location \"\(local ? localLocation : location)\""
-        ]
+    func jsonString() -> String {
+        // if !appointment.street.isEmpty && !appointment.number.isEmpty && !appointment.areaCode.isEmpty {
+        // is handled by api
+        return "{\"date\": \"\(self.date)\", \"time\": \"\(self.time)\", \"day\": \"\(self.day)\", \"location\": \"\(self.location)\", \"area\": \"\(self.areaCode)\", \"street\": \"\(self.street)\", \"number\": \"\(self.number)\"}"
+    }
+}
 
-        if let areaCode = areaCode, !areaCode.isEmpty, !local {
-            components.append("--area-code \"\(areaCode)\"")
+func appointmentsQueueToJSON(_ appointments: [Appointment]) -> String {
+    var jsonString = ""
+    for (index, appt) in appointments.enumerated() {
+        if index > 0 {
+            jsonString.append(", ")
         }
-        if let street = street, !street.isEmpty, !local {
-            components.append("--street \"\(street)\"")
-        }
-        if let number = number, !number.isEmpty, !local {
-            components.append("--number \"\(number)\"")
-        }
+        let jsonAppointment = appt.jsonString()
+        jsonString.append(jsonAppointment)
+    }
+    return jsonString.wrapJsonForCLI()
+}
 
-        return components.joined(separator: " ")
+func executeMailer(_ arguments: String) throws {
+    do {
+        let home = Home.string()
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/zsh") // Use Zsh directly
+        process.arguments = ["-c", "source ~/dotfiles/.vars.zsh && \(home)/sbm-bin/mailer \(arguments)"]
+        
+        let outputPipe = Pipe()
+        let errorPipe = Pipe()
+        process.standardOutput = outputPipe
+        process.standardError = errorPipe
+
+        try process.run()
+        process.waitUntilExit()
+
+        let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+        let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+        let outputString = String(data: outputData, encoding: .utf8) ?? ""
+        let errorString = String(data: errorData, encoding: .utf8) ?? ""
+
+        if process.terminationStatus == 0 {
+            print("numbers-parser executed successfully:\n\(outputString)")
+        } else {
+            print("Error running numbers-parser:\n\(errorString)")
+            throw NSError(domain: "numbers-parser", code: Int(process.terminationStatus), userInfo: [NSLocalizedDescriptionKey: errorString])
+        }
+    } catch {
+        print("Error running commands: \(error)")
+        throw error
+    }
+}
+
+// Replace '|' with space, split by whitespace, remove empty parts, and join back
+extension String {
+    var normalizedForSearch: String {
+        return self.folding(options: .diacriticInsensitive, locale: .current)
+            .replacingOccurrences(of: "|", with: " ")
+            .components(separatedBy: CharacterSet.whitespacesAndNewlines)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+            .lowercased()
+    }
+}
+
+extension String {
+    func wrapJsonForCLI() -> String {
+        return "'[\(self)]'"
     }
 }
 
