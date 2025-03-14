@@ -420,24 +420,42 @@ struct DatePickerView: View {
                 Spacer()
 
                 // **Queue Management Buttons**
-                HStack {
-                    Button(action: addToQueue) {
-                        Label("Add to Queue", systemImage: "plus.circle.fill")
+                if showSuccessBanner {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.white)
+                            Text(successBannerMessage)
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .background(Color.green)
+                        .cornerRadius(8)
+                        .padding(.bottom, 20)
+                        .transition(.move(edge: .bottom))
                     }
-                    .buttonStyle(.borderedProminent)
+                    .animation(.easeInOut, value: showSuccessBanner)
+                } else {
+                    HStack {
+                        Button(action: addToQueue) {
+                            Label("Add to Queue", systemImage: "plus.circle.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
 
-                    Button(action: clearQueue) {
-                        Label("Clear Queue", systemImage: "trash.fill")
-                            .foregroundColor(.red)
-                    }
-                    .buttonStyle(.bordered)
+                        Button(action: clearQueue) {
+                            Label("Clear Queue", systemImage: "trash.fill")
+                                .foregroundColor(.red)
+                        }
+                        .buttonStyle(.bordered)
 
-                    Button(action: sendConfirmationEmail) {
-                        Label("Send confirmation", systemImage: "paperplane.fill")
+                        Button(action: sendConfirmationEmail) {
+                            Label("Send confirmation", systemImage: "paperplane.fill")
+                        }
+                        .buttonStyle(.borderedProminent)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 10)
                 }
-                .padding(.top, 10)
             }
             .frame(width: 400)
         }
@@ -451,23 +469,6 @@ struct DatePickerView: View {
                 message: Text(alertMessage),
                 dismissButton: .default(Text("OK"))
             )
-        }
-        if showSuccessBanner {
-            VStack {
-                Spacer()
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.white)
-                    Text(successBannerMessage)
-                        .foregroundColor(.white)
-                }
-                .padding()
-                .background(Color.green)
-                .cornerRadius(8)
-                .padding(.bottom, 20)
-                .transition(.move(edge: .bottom))
-            }
-            .animation(.easeInOut, value: showSuccessBanner)
         }
     }
 
@@ -514,6 +515,10 @@ struct DatePickerView: View {
                 DispatchQueue.main.async {
                     successBannerMessage = "The confirmation email was sent successfully."
                     showSuccessBanner = true
+
+                    clearQueue()
+                    clearContact()
+
                     // Auto-dismiss after 3 seconds
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
@@ -530,6 +535,16 @@ struct DatePickerView: View {
                 }
             }
         }
+    }
+
+    private func clearContact() {
+        client = ""
+        email = ""
+        dog = ""
+        location = ""
+        areaCode = ""
+        street = ""
+        number = ""
     }
 }
 
