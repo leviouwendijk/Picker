@@ -10,5 +10,7 @@
     <string>1.0</string>
     <key>CFBundleExecutable</key>
     <string>Picker</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>This app requires access to your calendar to create events for your appointments.</string>
 </dict>
 </plist>

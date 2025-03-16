@@ -1,0 +1,98 @@
+
+    @State private var calendarSearchQuery = ""
+    @State private var calendars: [EKCalendar] = []
+    @State private var selectedCalendarIdentifier: String = ""
+    // @State private var defaultCalendarIdentifier: String? = UserDefaults.standard.string(forKey: "DefaultCalendarIdentifier")
+
+
+                // CALENDAR
+                VStack(alignment: .leading) {
+                    TextField("Search Calendars", text: $calendarSearchQuery)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                    
+                    List(calendars, id: \.calendarIdentifier) { calendar in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(calendar.title)
+                                    .font(selectedCalendarIdentifier == calendar.calendarIdentifier ? .headline : .body)
+                                // You might display additional info such as the calendar's source
+                                Text(calendar.source.title)
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                            }
+                            Spacer()
+                            Button(action: {
+                                selectedCalendarIdentifier = calendar.calendarIdentifier
+                                UserDefaults.standard.set(calendar.calendarIdentifier, forKey: "DefaultCalendarIdentifier")
+                            }) {
+                                Text("Set as Default")
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                    .frame(height: 200)
+                }
+                // CALENDAR
+
+        .onAppear {
+            fetchContacts()
+            requestCalendarAccess() { _ in
+                fetchCalendars()
+            }
+        }
+
+
+    private func requestCalendarAccess(completion: @escaping (Bool) -> Void) {
+        let eventStore = EKEventStore()
+        if #available(macOS 14.0, *) {
+            eventStore.requestFullAccessToEvents { granted, error in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        } else {
+            eventStore.requestAccess(to: .event) { granted, error in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        }
+    }
+
+
+    private func fetchCalendars() {
+        let eventStore = EKEventStore()
+        // Get all event calendars
+        let fetchedCalendars = eventStore.calendars(for: .event)
+        DispatchQueue.main.async {
+            calendars = fetchedCalendars
+        }
+    }
+
+    private func requestCalendarAccess(completion: @escaping (Bool) -> Void) {
+        let eventStore = EKEventStore()
+        if #available(macOS 14.0, *) {
+            eventStore.requestFullAccessToEvents { granted, error in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        } else {
+            eventStore.requestAccess(to: .event) { granted, error in
+                DispatchQueue.main.async {
+                    completion(granted)
+                }
+            }
+        }
+    }
+
+    private func fetchCalendars() {
+        let eventStore = EKEventStore()
+        // Get all event calendars
+        let fetchedCalendars = eventStore.calendars(for: .event)
+        DispatchQueue.main.async {
+            calendars = fetchedCalendars
+        }
+    }

@@ -1,5 +1,6 @@
 import SwiftUI
 import Contacts
+import EventKit
 import plate
 
 struct DatePickerView: View {
@@ -268,12 +269,7 @@ struct DatePickerView: View {
                         // Contact List
                         List(filteredContacts, id: \.identifier) { contact in
                             Button(action: {
-                                client = ""
-                                dog = ""
-                                email = ""
-                                location = ""
-                                street = ""
-                                areaCode = ""
+                                clearContact()
 
                                 selectedContact = contact
 
@@ -621,6 +617,7 @@ struct MailerArguments {
             return components.joined(separator: " ")
         }
     }
+
 }
 
 struct Appointment: Identifiable {
