@@ -541,6 +541,7 @@ struct DatePickerView: View {
         areaCode = ""
         street = ""
         number = ""
+        selectedContact = nil
     }
 }
 
