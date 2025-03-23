@@ -156,6 +156,8 @@ struct DatePickerView: View {
     @State private var showSuccessBanner = false
     @State private var successBannerMessage = ""
 
+    @State private var isSendingEmail = false
+
     var body: some View {
         HStack {
             // Month selector
@@ -449,6 +451,7 @@ struct DatePickerView: View {
                             Label("Send confirmation", systemImage: "paperplane.fill")
                         }
                         .buttonStyle(.borderedProminent)
+                        .disabled(isSendingEmail)
                     }
                     .padding(.top, 10)
                 }
@@ -495,6 +498,8 @@ struct DatePickerView: View {
     }
 
     private func sendConfirmationEmail() {
+        isSendingEmail = true
+
         let data = MailerArguments(
             client: client,
             email: email,
@@ -515,6 +520,8 @@ struct DatePickerView: View {
                     clearQueue()
                     clearContact()
 
+                    isSendingEmail = false
+
                     // Auto-dismiss after 3 seconds
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         withAnimation {
@@ -528,6 +535,8 @@ struct DatePickerView: View {
                     alertTitle = "Error"
                     alertMessage = "There was an error sending the confirmation email:\n\(error.localizedDescription) \(arguments)"
                     showAlert = true
+
+                    isSendingEmail = false
                 }
             }
         }
@@ -671,10 +680,10 @@ func executeMailer(_ arguments: String) throws {
         let errorString = String(data: errorData, encoding: .utf8) ?? ""
 
         if process.terminationStatus == 0 {
-            print("numbers-parser executed successfully:\n\(outputString)")
+            print("mailer executed successfully:\n\(outputString)")
         } else {
-            print("Error running numbers-parser:\n\(errorString)")
-            throw NSError(domain: "numbers-parser", code: Int(process.terminationStatus), userInfo: [NSLocalizedDescriptionKey: errorString])
+            print("Error running mailer:\n\(errorString)")
+            throw NSError(domain: "mailer", code: Int(process.terminationStatus), userInfo: [NSLocalizedDescriptionKey: errorString])
         }
     } catch {
         print("Error running commands: \(error)")
