@@ -58,6 +58,7 @@ struct DatePickerView: View {
     @State private var street: String?
     @State private var number: String?
     @State private var localLocation = "Alkmaar"
+    @State private var localStreet = "Prins Hendrikstraat"
 
     var cliDate: String {
         return String(format: "%02d/%02d/%04d", selectedDay, selectedMonth, year)
@@ -111,7 +112,7 @@ struct DatePickerView: View {
             date: dateString,
             time: timeString,
             day: dayString,
-            street: local ? "" : (street ?? ""),
+            street: local ? localStreet : (street ?? ""),
             number: local ? "" : (number ?? ""),
             areaCode: local ? "" : (areaCode ?? ""),
             location: local ? localLocation : location
@@ -322,7 +323,7 @@ struct DatePickerView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
 
                         TextField("Street", text: Binding(
-                            get: { local ? "" : (street ?? "") },
+                            get: { local ? localStreet : (street ?? "") },
                             set: { street = local ? nil : ($0.isEmpty ? nil : $0) }
                         ))
                         .textFieldStyle(RoundedBorderTextFieldStyle())
