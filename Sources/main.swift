@@ -648,7 +648,7 @@ struct MailerArguments {
 
 }
 
-struct Appointment: Identifiable {
+struct Appointment: Identifiable, Codable {
     let id = UUID()
     let date: String
     let time: String
@@ -658,23 +658,51 @@ struct Appointment: Identifiable {
     let areaCode: String
     let location: String
 
-    func jsonString() -> String {
-        // if !appointment.street.isEmpty && !appointment.number.isEmpty && !appointment.areaCode.isEmpty {
-        // is handled by api
-        return "{\"date\": \"\(self.date)\", \"time\": \"\(self.time)\", \"day\": \"\(self.day)\", \"location\": \"\(self.location)\", \"area\": \"\(self.areaCode)\", \"street\": \"\(self.street)\", \"number\": \"\(self.number)\"}"
+    // func jsonString() -> String {
+    //     // if !appointment.street.isEmpty && !appointment.number.isEmpty && !appointment.areaCode.isEmpty {
+    //     // is handled by api
+    //     return "{\"date\": \"\(self.date)\", \"time\": \"\(self.time)\", \"day\": \"\(self.day)\", \"location\": \"\(self.location)\", \"area\": \"\(self.areaCode)\", \"street\": \"\(self.street)\", \"number\": \"\(self.number)\"}"
+    // }
+
+    enum CodingKeys: String, CodingKey {
+        case date
+        case time
+        case day
+        case street
+        case number
+        case areaCode = "area" // rename for mailer's expected input
+        case location
+        // id is intentionally omitted
     }
 }
 
+// func appointmentsQueueToJSON(_ appointments: [Appointment]) -> String {
+//     var jsonString = ""
+//     for (index, appt) in appointments.enumerated() {
+//         if index > 0 {
+//             jsonString.append(", ")
+//         }
+//         let jsonAppointment = appt.jsonString()
+//         jsonString.append(jsonAppointment)
+//     }
+//     return jsonString.wrapJsonForCLI()
+// }
+
+// v2 using JSONEncoder instead of manual escaping
 func appointmentsQueueToJSON(_ appointments: [Appointment]) -> String {
-    var jsonString = ""
-    for (index, appt) in appointments.enumerated() {
-        if index > 0 {
-            jsonString.append(", ")
-        }
-        let jsonAppointment = appt.jsonString()
-        jsonString.append(jsonAppointment)
+    let encoder = JSONEncoder()
+    do {
+        let jsonData = try encoder.encode(appointments)
+        var jsonString = String(data: jsonData, encoding: .utf8) ?? "[]"
+
+        // Escape for Zsh (we're using '-c' and wrapping in single quotes)
+        jsonString = jsonString.replacingOccurrences(of: "'", with: "'\\''")
+
+        return "'\(jsonString)'" // wrap entire thing in single quotes for shell
+    } catch {
+        print("Failed to encode appointments: \(error)")
+        return "'[]'"
     }
-    return jsonString.wrapJsonForCLI()
 }
 
 func executeMailer(_ arguments: String) throws {
