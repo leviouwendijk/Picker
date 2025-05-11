@@ -649,11 +649,15 @@ struct DatePickerView: View {
                     // override color/message based on server response
                     bannerColor        = resp.success ? .green : .red
                     successBannerMessage = resp.message
+
+                    if resp.success {
+                        cleanThisView()
+                    }
                   }
                 }
                 // end of color mechanism
 
-                cleanThisView()
+                // cleanThisView()
 
                 // auto‐dismiss banner
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
