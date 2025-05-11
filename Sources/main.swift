@@ -485,8 +485,15 @@ struct DatePickerView: View {
                     }
                 .background(Color.black.opacity(0.05))
                 .cornerRadius(6)
-                // .frame(height: 500)
 
+                HStack {
+                    Button(action: copyMailerOutput) {
+                        Label("copy stdout", systemImage: "document.on.document.fill")
+                    }
+                    // .buttonStyle(.plain)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 10)
             }
             .frame(minWidth: 50)
             // end of new stdout pane
@@ -534,6 +541,10 @@ struct DatePickerView: View {
     private func cleanThisView() {
         clearQueue() // unique to Responder
         clearContact()
+    }
+
+    private func copyMailerOutput() {
+        copyToClipboard(mailerOutput)
     }
 
     private func sendConfirmationEmail() {
