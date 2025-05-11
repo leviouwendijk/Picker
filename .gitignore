@@ -10,4 +10,5 @@ DerivedData/
 .index-build/
 
 Picker.app/Contents/MacOS/Picker
+Picker.app/
 Package.resolved
