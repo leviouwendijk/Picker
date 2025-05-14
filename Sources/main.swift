@@ -184,87 +184,122 @@ struct DatePickerView: View {
     var body: some View {
         HStack {
             // Month selector
-            VStack {
-                Text("Months").bold()
-                List(0..<months.count, id: \.self) { index in
-                    Button(action: { selectedMonth = index + 1 }) {
-                        Text(months[index])
-                            .frame(maxWidth: .infinity, minHeight: 40)
-                            .padding()
-                            .background(selectedMonth == index + 1 ? Color.blue.opacity(0.3) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(spacing: 0) {
+                SectionTitle(title: "Months")
+                    .padding(.horizontal)
+
+                ScrollView {
+                    VStack(spacing: 5) {
+                        ForEach(months.indices, id: \.self) { idx in
+                            SelectableRow(
+                                title: months[idx],
+                                isSelected: selectedMonth == idx + 1
+                            ) {
+                                selectedMonth = idx + 1
+                                validateDay()
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
                     }
-                    .contentShape(Rectangle()) 
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
-                .scrollContentBackground(.hidden) 
             }
             .frame(width: 180)
-            
+
             // Day selector
-            VStack {
-                Text("Days").bold()
-                List(days, id: \.self) { day in
-                    Button(action: { selectedDay = day }) {
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity, minHeight: 40) 
-                            .padding()
-                            .background(selectedDay == day ? Color.blue.opacity(0.3) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8)) 
+            VStack(spacing: 0) {
+                SectionTitle(title: "Days")
+                    .padding(.horizontal)
+
+                ScrollView {
+                    VStack(spacing: 5) {
+                        ForEach(days, id: \.self) { day in
+                            SelectableRow(
+                                title: "\(day)",
+                                isSelected: selectedDay == day
+                            ) {
+                                selectedDay = day
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
                     }
-                    .contentShape(Rectangle()) 
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
-                .scrollContentBackground(.hidden)
             }
             .frame(width: 140)
-            
-            // Hours selector
-            VStack {
-                Text("Hours").bold()
-                List(hours, id: \.self) { hour in
-                    Button(action: { selectedHour = hour }) {
-                        Text("\(hour, specifier: "%02d")")
-                            .frame(maxWidth: .infinity, minHeight: 40) 
-                            .padding()
-                            .background(selectedHour == hour ? Color.blue.opacity(0.3) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8)) 
+
+            // Hour selector
+            VStack(spacing: 0) {
+                SectionTitle(title: "Hours")
+                    .padding(.horizontal)
+
+                ScrollView {
+                    VStack(spacing: 5) {
+                        ForEach(hours, id: \.self) { hour in
+                            SelectableRow(
+                                title: String(format: "%02d", hour),
+                                isSelected: selectedHour == hour
+                            ) {
+                                selectedHour = hour
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
                     }
-                    .contentShape(Rectangle()) 
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
-                .scrollContentBackground(.hidden)
             }
             .frame(width: 120)
 
-            // Minutes selector
-            VStack {
-                Text("Minutes").bold()
-                List(minutes, id: \.self) { minute in
-                    Button(action: { selectedMinute = minute }) {
-                        Text("\(minute, specifier: "%02d")")
-                            .frame(maxWidth: .infinity, minHeight: 40) 
-                            .padding()
-                            .background(selectedMinute == minute ? Color.blue.opacity(0.3) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8)) 
-                    }
-                    .contentShape(Rectangle()) 
-                }
-                .scrollContentBackground(.hidden) 
+            // Minute selector + Common
+            VStack(spacing: 0) {
+                SectionTitle(title: "Minutes")
+                    .padding(.horizontal)
 
-                Spacer()
-                Divider()
-                Spacer()
-
-                Text("Common").bold()
-                List([0, 15, 30, 45], id: \.self) { minute in
-                    Button(action: { selectedMinute = minute }) {
-                        Text("\(minute, specifier: "%02d")")
-                            .frame(maxWidth: .infinity, minHeight: 40) 
-                            .padding()
-                            .background(selectedMinute == minute ? Color.blue.opacity(0.3) : Color.clear)
-                            .clipShape(RoundedRectangle(cornerRadius: 8)) 
+                ScrollView {
+                    VStack(spacing: 5) {
+                        // All minute options
+                        ForEach(minutes, id: \.self) { minute in
+                            SelectableRow(
+                                title: String(format: "%02d", minute),
+                                isSelected: selectedMinute == minute
+                            ) {
+                                selectedMinute = minute
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
                     }
-                    .contentShape(Rectangle()) 
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
                 }
-                .scrollContentBackground(.hidden) 
+
+
+                ScrollView {
+                    VStack(spacing: 5) {
+                        SectionTitle(title: "Common")
+                            .padding(.horizontal)
+
+                        // Common quarter-hour picks
+                        ForEach([0, 15, 30, 45], id: \.self) { minute in
+                            SelectableRow(
+                                title: String(format: "%02d", minute),
+                                isSelected: selectedMinute == minute
+                            ) {
+                                selectedMinute = minute
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+
+
+
+
+
             }
             .frame(width: 120)
             

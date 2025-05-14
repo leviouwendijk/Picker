@@ -9,7 +9,7 @@ let package = Package(
         .macOS(.v15)
     ],
     dependencies: [
-        .package(url: "https://github.com/leviouwendijk/plate.git", from: "1.0.2"),
+        .package(url: "https://github.com/leviouwendijk/plate.git", branch: "master"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
