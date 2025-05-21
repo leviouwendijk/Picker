@@ -956,9 +956,30 @@ struct ContentView: View {
 
 @main
 struct DatePickerApp: App {
+    let buildSpecification = BuildSpecification(
+        version: BuildVersion(major: 2, minor: 0, patch: 0),
+        name: "Picker",
+        author: "Levi Ouwendijk",
+        description: ""
+    )
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            VStack {
+                ContentView()
+
+                BuildInformationSwitch(
+                    specification: buildSpecification,
+                    alignment: .center,
+                    display: [
+                        [.version, .versionPrefix],
+                        [.name],
+                        [.author]
+                    ],
+                    prefixStyle: .long
+                )
+            }
         }
+
     }
 }
