@@ -75,7 +75,7 @@ struct DatePickerView: View {
     @State private var street: String?
     @State private var number: String?
     @State private var localLocation = "Alkmaar"
-    @State private var localStreet = "Prins Hendrikstraat"
+    @State private var localStreet = "Alkmaarderhout"
 
     var cliDate: String {
         return String(format: "%02d/%02d/%04d", selectedDay, selectedMonth, year)
