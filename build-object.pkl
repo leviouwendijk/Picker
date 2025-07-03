@@ -1,0 +1,11 @@
+uuid = "0B549972-47B7-41ED-8CB0-4DB9E711E486"
+name = "Picker"
+type = "application"
+version {
+    major = 2
+    minor = 0
+    patch = 0
+}
+details = ""
+author = "Levi Ouwendijk"
+update = "https://raw.githubusercontent.com/leviouwendijk/Picker/refs/heads/master/build-object.pkl"

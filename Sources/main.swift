@@ -2,6 +2,7 @@ import SwiftUI
 import Contacts
 import EventKit
 import plate
+import ViewComponents
 
 extension String {
     /// Returns the first capture‐group for `pattern`, or nil.
@@ -956,12 +957,12 @@ struct ContentView: View {
 
 @main
 struct DatePickerApp: App {
-    let buildSpecification = BuildSpecification(
-        version: BuildVersion(major: 2, minor: 0, patch: 0),
-        name: "Picker",
-        author: "Levi Ouwendijk",
-        description: ""
-    )
+    // let buildSpecification = BuildSpecification(
+    //     version: BuildVersion(major: 2, minor: 0, patch: 0),
+    //     name: "Picker",
+    //     author: "Levi Ouwendijk",
+    //     description: ""
+    // )
 
     var body: some Scene {
         WindowGroup {
@@ -969,10 +970,11 @@ struct DatePickerApp: App {
                 ContentView()
 
                 BuildInformationSwitch(
-                    specification: buildSpecification,
+                    // specification: buildSpecification,
                     alignment: .center,
                     display: [
-                        [.version, .versionPrefix],
+                        [.version],
+                        // [.latestVersion],
                         [.name],
                         [.author]
                     ],
