@@ -970,11 +970,10 @@ struct DatePickerApp: App {
                 ContentView()
 
                 BuildInformationSwitch(
-                    // specification: buildSpecification,
                     alignment: .center,
                     display: [
                         [.version],
-                        // [.latestVersion],
+                        [.latestVersion],
                         [.name],
                         [.author]
                     ],
