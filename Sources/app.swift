@@ -9,7 +9,7 @@ import Interfaces
 
 @main
 struct PickerApp: App {
-    @StateObject private var viewmodel = ResponderViewModel()
+    @StateObject private var viewmodel = ResponderViewModel(pickerMode: true)
 
     public var errorMessage = ""
 

@@ -24,7 +24,6 @@ struct Picker: View {
 
                     VariablesView(
                         // viewmodel: viewmodel
-                        picker: true
                     )
                     // .environmentObject(viewmodel)
                     .frame(minWidth: 380)
