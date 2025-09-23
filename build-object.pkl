@@ -2,7 +2,7 @@ uuid = "0B549972-47B7-41ED-8CB0-4DB9E711E486"
 name = "Picker"
 type = "application"
 version {
-    major = 2
+    major = 3
     minor = 0
     patch = 0
 }

@@ -1,13 +1,67 @@
 {
-  "originHash" : "c1ff66e000c17d98bba202a6036db23ec9440fbe35c12abd7790a07b138f1caa",
+  "originHash" : "5b20fb3e0b29bb1c66c3675facc981278b7fa94c3b11c2eb5e4e8344774f1c5c",
   "pins" : [
+    {
+      "identity" : "commerce",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Commerce.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "2fbd84458c4a1c07e14e633587f21836569b3e99"
+      }
+    },
+    {
+      "identity" : "compositions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Compositions.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "0b29ac7de251d2aa47b022e9f4df632ca8786a56"
+      }
+    },
+    {
+      "identity" : "economics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Economics.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "379ead15beebebf4d3850418baaa0c1f9aff226d"
+      }
+    },
+    {
+      "identity" : "extensions",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Extensions.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "3310d463b1bc509cccd8e75f0acc221e153f5dff"
+      }
+    },
+    {
+      "identity" : "implementations",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Implementations.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "bd0a2572e0295a6ab5c804ee5fc88d0d870330f4"
+      }
+    },
+    {
+      "identity" : "interfaces",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Interfaces.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "27e1b0eb9a3c258557b434c5a1a44406d3687acc"
+      }
+    },
     {
       "identity" : "plate",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/leviouwendijk/plate.git",
       "state" : {
         "branch" : "master",
-        "revision" : "932f7c6f7a3280ea722e935df6b199138c9e9844"
+        "revision" : "bef4fe9c3d768cd76521af5d63d0628ccbad06d2"
       }
     },
     {
@@ -16,7 +70,7 @@
       "location" : "https://github.com/leviouwendijk/Structures.git",
       "state" : {
         "branch" : "master",
-        "revision" : "f2a73141659163d14a9429c0621525d51cc741d0"
+        "revision" : "24d08807d7d8eb60b3a03f752cd0dd90b3577bf7"
       }
     },
     {
@@ -25,7 +79,7 @@
       "location" : "https://github.com/leviouwendijk/ViewComponents.git",
       "state" : {
         "branch" : "master",
-        "revision" : "660d42b0ed07bb8fcd86dea5a747aaaad49bbb8d"
+        "revision" : "fd404add1ea3d6db3f63c16496d3a447ce6ef523"
       }
     }
   ],
