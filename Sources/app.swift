@@ -34,7 +34,7 @@ struct PickerApp: App {
                       .environmentObject(viewmodel)
                       .onAppear {
                           viewmodel.apiPathVm.selectedRoute = .appointment
-                          viewmodel.apiPathVm.selectedEndpoint = .init(base: .confirmation)
+                          viewmodel.apiPathVm.selectedEndpoint = .init(base: .confirmation, method: .post)
                       }
                       .tabItem {
                           Label("Mailer", systemImage: "paperplane.fill")

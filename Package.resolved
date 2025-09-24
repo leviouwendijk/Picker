@@ -16,7 +16,7 @@
       "location" : "https://github.com/leviouwendijk/Compositions.git",
       "state" : {
         "branch" : "master",
-        "revision" : "eda8779e7a1ad4dc83b5fec25d0dbb753d5a72f7"
+        "revision" : "dc8006d9b1b91b88c2773ed9addc9a7dface5c13"
       }
     },
     {
@@ -52,7 +52,7 @@
       "location" : "https://github.com/leviouwendijk/Interfaces.git",
       "state" : {
         "branch" : "master",
-        "revision" : "7a9ad5b30fc4ee2480f3a6443c099737670bb4f8"
+        "revision" : "ccc5388e702cc36fb5f2d05abfc28466cc99fff7"
       }
     },
     {
