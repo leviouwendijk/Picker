@@ -4,7 +4,7 @@ type = "application"
 version {
     major = 3
     minor = 1
-    patch = 3
+    patch = 4
 }
 details = ""
 author = "Levi Ouwendijk"
