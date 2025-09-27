@@ -1,10 +1,18 @@
 uuid = "0B549972-47B7-41ED-8CB0-4DB9E711E486"
 name = "Picker"
-type = "application"
-version {
-    major = 3
-    minor = 1
-    patch = 4
+types {
+    "application"
+}
+versions {
+    release {
+        major = 3
+        minor = 1
+        patch = 4
+    }
+}
+compile {
+    use = true
+    arguments { "--local" }
 }
 details = ""
 author = "Levi Ouwendijk"

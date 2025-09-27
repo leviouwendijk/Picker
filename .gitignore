@@ -12,3 +12,8 @@ DerivedData/
 Picker.app/Contents/MacOS/Picker
 Picker.app/
 Package.resolved
+
+# auto-added ignorables:
+compiled.pkl
+/compiled.pkl
+**/compiled.pkl
